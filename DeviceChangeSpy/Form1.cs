@@ -10,6 +10,7 @@ using Dapplo.Windows.Messages;
 using Dapplo.Windows.Devices;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using Dapplo.Windows.Devices.Enums;
 using Dapplo.Windows.Devices.Structs;
 
 namespace DeviceChangeSpy
@@ -29,6 +30,24 @@ namespace DeviceChangeSpy
             DeviceNotification
                 .OnDeviceRemoved()
                 .Subscribe(d => Log("OnDeviceRemoved", d.Device));
+            DeviceNotification
+                .OnVolumeAdded()
+                .Subscribe(d => Log("OnVolumeAdded", d.Volume));
+            DeviceNotification
+                .OnVolumeChanges()
+                .Subscribe(d => Log("OnVolumeChanges", d.Volume));
+            DeviceNotification
+                .OnVolumeRemoved()
+                .Subscribe(d => Log("OnVolumeRemoved", d.Volume));
+        }
+
+        private void Log(string method, DevBroadcastVolume v)
+        {
+            var log = $"[{DateTime.Now.ToShortTimeString()}] {method}:{v.Drives} Network:{v.IsNetworkVolume} IsMediaChange:{v.IsMediaChange}";
+            listBox1.Invoke((MethodInvoker)delegate {
+                // Running on the UI thread
+                listBox1.Items.Add(log);
+            });
         }
 
         private void Log(string method, DevBroadcastDeviceInterface d)
